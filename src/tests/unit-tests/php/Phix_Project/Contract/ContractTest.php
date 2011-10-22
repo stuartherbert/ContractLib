@@ -59,45 +59,103 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $refMethod = $refClass->getMethod('__construct');
                 $this->assertFalse($refMethod->isPublic());
         }
-        
-        /*
-        public function testCanInstantiate()
-        {
-                $obj = new Contract();
-                $this->assertTrue($obj instanceof Contract);
-        }
-        */
-        
+                
         public function testPreconditionsMustBeTrue()
         {
-                // preconditional testing
-                Contract::Requires(true);
-                $this->assertTrue(true);
+                // prove that the precondition checks do not throw an
+                // exception when they are passed the value of TRUE
+                $this->assertTrue(Contract::Requires(true));
+                $this->assertTrue(Contract::RequiresValue(true, 0));
                 
+                // prove that the precondition checks do throw an exception
+                // when they are passed the value of FALSE
                 $caughtException = false;
                 try
                 {
                         Contract::Requires(false);
                 }
-                catch (E5xx_ContractPreconditionException $e)
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = true;
+                }
+                $this->assertTrue($caughtException);
+                
+                // repeat the check with another of the precondition
+                // check methods
+                $caughtException = false;
+                try
+                {
+                        Contract::RequiresValue(false, 10);
+                }
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = true;
                 }
                 $this->assertTrue($caughtException);
         }
-
+        
         public function testPostconditionsMustBeTrue()
         {
-                // postconditional testing
-                Contract::Ensures(true);
-                $this->assertTrue(true);
+                // prove that the postcondition checks do not throw an
+                // exception when they are passed the value of TRUE
+                $this->assertTrue(Contract::Ensures(true));
+                $this->assertTrue(Contract::EnsuresValue(true, 0));
                 
+                // prove that the postcondition checks do throw an
+                // exception when they are passed the value of FALSE
                 $caughtException = false;
                 try
                 {
                         Contract::Ensures(false);
                 }
-                catch (E5xx_ContractPostconditionException $e)
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = true;
+                }
+                $this->assertTrue($caughtException);
+                
+                // repeat the test for another of the postcondition
+                // check methods
+                $caughtException = false;
+                try
+                {
+                        Contract::EnsuresValue(false, 10);
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = true;
+                }
+                $this->assertTrue($caughtException);
+        }
+        
+        public function testMidConditionsMustBeTrue()
+        {
+                // prove that the condition checks do not throw an
+                // exception when they are passed the value of TRUE
+                $this->assertTrue(Contract::Asserts(true));
+                $this->assertTrue(Contract::AssertsValue(true, 0));
+                
+                // prove that the condition checks do throw an exception
+                // when they are passed the value of FALSE
+                $caughtException = false;
+                try
+                {
+                        Contract::Asserts(false);
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = true;
+                }
+                $this->assertTrue($caughtException);
+                
+                // repeat the test with another of the condition check
+                // methods
+                $caughtException = false;
+                try
+                {
+                        Contract::AssertsValue(false, 10);
+                }
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = true;
                 }
@@ -121,7 +179,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         Contract::ForAll($testData1, function($value) { Contract::Requires($value > 5); });
                 }
-                catch (E5xx_ContractPreconditionException $e)
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = true;
                 }
@@ -133,7 +191,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         Contract::ForAll($testData2, function($value) { Contract::Requires($value < 6); });
                 }
-                catch (E5xx_ContractPreconditionException $e)
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = true;
                 }
@@ -147,7 +205,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         Contract::RequiresValue(false, 5);
                 }
-                catch (E5xx_ContractPreconditionException $e)
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = $e->getMessage();
                 }
@@ -167,7 +225,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         Contract::EnsuresValue(false, 5);
                 }
-                catch (E5xx_ContractPostconditionException $e)
+                catch (E5xx_ContractFailedException $e)
                 {
                         $caughtException = $e->getMessage();
                 }
@@ -180,27 +238,121 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($expected, $caughtException);
         }
         
-        public function testCanWrapContractUpForPeformance()
+        public function testCanSeeTheValueThatFailedTheMidCondition()
         {
-                Contract::EnforceWrappedContracts();
+                $caughtException = false;
+                try
+                {
+                        Contract::AssertsValue(false, 5);
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
                 
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::AssertsValue() failed with value '5'";
+                $this->assertEquals($expected, $caughtException);
+        }
+        
+        public function testWrappedContractsAreNotCalledByDefault()
+        {
+                // some data to test
                 $x = 1;
                 $y = 2;
                 $z = 3;
                 
-                Contract::Preconditions(function($x, $y, $z) {
+                // check wrapped preconditions
+                $executed = false;
+                Contract::Preconditions(function($x, $y, $z) use (&$executed) {
                         Contract::Requires($x < $y);
                         Contract::Requires($y < $z);
+                        $executed = true;
                 }, array($x, $y, $z));
+                $this->assertFalse($executed);
                 
-                Contract::Conditionals(function() {
+                // check wrapped mid-conditions
+                $executed = false;
+                Contract::Conditionals(function() use (&$executed) {
                         Contract::Asserts(2 > 1);
                         Contract::Asserts(5 > 4);
+                        $executed = true;
                 });
+                $this->assertFalse($executed);
                 
-                Contract::Postconditions(function($x, $y, $z) {
+                // check wrapped postconditions
+                $executed = false;
+                Contract::Postconditions(function($x, $y, $z) use (&$executed) {
                         Contract::Ensures($x < $z);
                         Contract::Ensures($z > $x);
+                        $executed = true;
                 }, array($x, $y, $z));
+                $this->assertFalse($executed);                
+        }
+        
+        public function testCanWrapContractsForPeformance()
+        {
+                // enable wrapped contracts
+                Contract::EnforceWrappedContracts();
+                
+                // some data to test
+                $x = 1;
+                $y = 2;
+                $z = 3;
+                
+                // check wrapped preconditions
+                $executed = false;
+                Contract::Preconditions(function($x, $y, $z) use (&$executed) {
+                        Contract::Requires($x < $y);
+                        Contract::Requires($y < $z);
+                        $executed = true;
+                }, array($x, $y, $z));
+                $this->assertTrue($executed);
+                
+                // check wrapped mid-conditions
+                $executed = false;
+                Contract::Conditionals(function() use (&$executed) {
+                        Contract::Asserts(2 > 1);
+                        Contract::Asserts(5 > 4);
+                        $executed = true;
+                });
+                $this->assertTrue($executed);
+                
+                // check wrapped postconditions
+                $executed = false;
+                Contract::Postconditions(function($x, $y, $z) use (&$executed) {
+                        Contract::Ensures($x < $z);
+                        Contract::Ensures($z > $x);
+                        $executed = true;
+                }, array($x, $y, $z));
+                $this->assertTrue($executed);
+        }        
+        
+        public function testCanDisabledWrappedContracts()
+        {
+                // enable wrapped contracts
+                Contract::EnforceWrappedContracts();
+                
+                // execute a wrapped contract
+                $executed = false;
+                Contract::Preconditions(function() use (&$executed)
+                {
+                        $executed = true;
+                });
+                $this->assertTrue($executed);
+                
+                // now, disable wrapped contracts
+                Contract::EnforceOnlyDirectContracts();
+                
+                // repeat the test
+                $executed = false;
+                Contract::Preconditions(function() use (&$executed)
+                {
+                        $executed = true;
+                });
+                $this->assertFalse($executed);
         }
 }

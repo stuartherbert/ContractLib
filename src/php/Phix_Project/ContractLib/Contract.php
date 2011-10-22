@@ -76,13 +76,16 @@ class Contract
          * 
          * @throw E5xx_ContractPreconditionException
          * @param boolean $expr 
+         * @return boolean true on success
          */
         static public function Requires($expr)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractPreconditionException();
+                        throw new E5xx_ContractFailedException('Requires');
                 }
+                
+                return true;
         }
         
         /**
@@ -98,13 +101,16 @@ class Contract
          * 
          * @param boolean $expr
          * @param mixed $value 
+         * @return boolean true on success
          */
         static public function RequiresValue($expr, $value)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractPreconditionException(true, $value);
+                        throw new E5xx_ContractFailedException('RequiresValue', true, $value);
                 }
+                
+                return true;
         }
         
         /**
@@ -116,13 +122,16 @@ class Contract
          * Throws an E5xx_ContractPostconditionException if $expr is false.
          * 
          * @param boolean $expr 
+         * @return boolean true on success
          */
         static public function Ensures($expr)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractPostconditionException();
+                        throw new E5xx_ContractFailedException('Ensures');
                 }
+                
+                return true;
         }
         
         /**
@@ -137,13 +146,16 @@ class Contract
          * 
          * @param boolean $expr
          * @param mixed $value 
+         * @return boolean true on success
          */
         static public function EnsuresValue($expr, $value)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractPostconditionException(true, $value);
+                        throw new E5xx_ContractFailedException('EnsuresValue', true, $value);
                 }
+                
+                return true;
         }
         
         /**
@@ -154,14 +166,17 @@ class Contract
          * 
          * Throws an E5xx_ContractConditionException if $expr is false.
          * 
-         * @param type $expr 
+         * @param boolean $expr 
+         * @return boolean true on success
          */
         static public function Asserts($expr)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractConditionException();
+                        throw new E5xx_ContractFailedException('Asserts');
                 }
+                
+                return true;
         }
         
         /**
@@ -176,23 +191,31 @@ class Contract
          * 
          * @param boolean $expr 
          * @param mixed $value
+         * @return boolean true on success
          */
         static public function AssertsValue($expr, $value)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractConditionException(true, $value);
+                        throw new E5xx_ContractFailedException('AssertsValue', true, $value);
                 }
+                
+                return true;
         }
         
         /**
+         * Apply the same condition (or set of conditions) to the values
+         * in an array
          * 
-         * @param type $values
-         * @param type $callback 
+         * @param array $values
+         * @param callback $callback 
+         * @param boolean true on success
          */
         static public function ForAll($values, $callback)
         {
                 array_walk($values, $callback);
+                
+                return true;
         }
 
         // ================================================================
@@ -227,6 +250,7 @@ class Contract
          * 
          * @param callback $callback
          * @param array $params 
+         * @return boolean true on success
          */
         static public function Preconditions($callback, $params = array())
         {
@@ -234,6 +258,8 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
+                
+                return true;
         }
         
         /**
@@ -245,6 +271,7 @@ class Contract
          * 
          * @param callback $callback
          * @param array $params 
+         * @return boolean true on success
          */
         static public function Postconditions($callback, $params = array())
         {
@@ -252,6 +279,8 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
+                
+                return true;
         }
         
         /**
@@ -263,6 +292,7 @@ class Contract
          * 
          * @param callback $callback
          * @param array $params 
+         * @return boolean true on success
          */
         static public function Conditionals($callback, $params = array())
         {
@@ -270,5 +300,7 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
+                
+                return true;
         }
 }

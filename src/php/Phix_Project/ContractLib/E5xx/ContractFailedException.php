@@ -51,8 +51,15 @@ use Phix_Project\ExceptionsLib\E5xx_InternalServerErrorException;
  */
 class E5xx_ContractFailedException extends E5xx_InternalServerErrorException
 {
-        public function __construct($message)
+        public function __construct($contract, $hasValue = false, $value = false)
         {
-                parent::__construct($message);
+                if (!$hasValue)
+                {
+                        parent::__construct("Contract::" . $contract . "() failed");
+                }
+                else
+                {
+                        parent::__construct("Contract::" . $contract . "() failed with value '" . print_r($value, true) . "'");
+                }
         }
 }
