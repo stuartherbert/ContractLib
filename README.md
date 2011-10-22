@@ -1,7 +1,10 @@
 ContractLib
 ===========
 
-**ContractLib** is a simple-to-use PHP component for easily enforcing programming contracts throughout your PHP components.  These programming contracts can go a long way to helping you, and the users of your components, develop more robust code..
+**ContractLib** is a simple-to-use PHP component for easily enforcing programming contracts throughout your PHP components.  These programming contracts can go a long way to helping you, and the users of your components, develop more robust code.
+
+ContractLib is loosely inspired by Microsoft Research's work on the
+[Code Contracts Library for .NET]{http://research.microsoft.com/en-us/projects/contracts/userdoc.pdf}
 
 System-Wide Installation
 ------------------------
@@ -43,7 +46,7 @@ If you want to patch or enhance this component, you will need to create a suitab
 
 You can then clone the git repository:
 
-    # PropertiesLib
+    # ContractLib
     git clone git@github.com:stuartherbert/ContractLib.git
 
 Then, install a local copy of this component's dependencies to complete the development environment:
