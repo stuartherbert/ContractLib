@@ -1,5 +1,5 @@
-<project default="local-help">
-  <target name="local-help">
+<project name="local" default="help">
+  <target name="help">
     <echo message="This component has the following additional commands:" />
     <echo message=""/>
     <echo message="git-tag" />

@@ -3,9 +3,9 @@
 <project default="help" basedir=".">
   <!-- Human-readable info about our component -->
   <property file="build.properties" />
-  <php function="date" returnProperty="date.now">
-    <param value="YmdHi"/>
-  </php>
+  <taskdef name="now" classname="Phix_Project.ComponentManager.Phing.NowTask" />
+  <now name="date.now"/>
+  <echo message="Now is ${date.now}"/>
   <if>
     <and>
       <isset property="project.snapshot"/>
@@ -58,7 +58,15 @@
   <property name="project.tarfile"         value="${project.distdir}/${project.tarfilename}" />
 
   <!-- what was the last PEAR package we created, if any? -->
-  <php expression="@file_get_contents('${project.distdir.lastBuilt}');" returnProperty="project.lastBuiltTarfile"/>
+  <if>
+    <available file="${project.distdir.lastBuilt}"/>
+    <then>
+      <property file="${project.distdir.lastBuilt}"/>
+    </then>
+    <else>
+      <property name="project.lastBuiltTarfile" value="false"/>  
+    </else>
+  </if>
 
   <!-- override this if you want to run additional PEAR commands -->
   <property name="pear.cmd" value="" override="true" />
@@ -105,6 +113,7 @@
     <include name="*.md" />
   </fileset>
 
+  <taskdef name="phingcallifexists" classname="Phix_Project.ComponentManager.Phing.PhingCallIfExistsTask" />
   <import file="build.local.xml"/>
   
   <!-- Tell the user what this build file supports -->
@@ -159,7 +168,7 @@
     <echo message="  version" />
     <echo message="    Show this component's version from build.properties" />
     <echo message="" />
-    <phingcall target="local-help" />
+    <phingcallifexists target="local.help" />
   </target>
 
   <!-- Show the current version, as set in build.properties -->
@@ -175,6 +184,7 @@
         <include name="**/*.php" />
       </fileset>
     </phplint>
+    <phingcallifexists target="local.lint" />
   </target>
 
   <!-- Run the unit tests for this module -->
@@ -198,18 +208,24 @@
     <mkdir dir="${project.review.logsdir}" />
     <exec command="phpunit --configuration=phpunit.xml ${project.src.testunitdir}" checkreturn="true" logoutput="true"/>
     <echo/>
-    <echo>The code coverage report is in ${project.review.codecoveragedir}</echo>
+    <echo>The code coverage report is in file://${project.review.codecoveragedir}</echo>
     <echo/>
   </target>
 
   <!-- Run all the tests for this module -->
-  <target name="test" depends="run-unittests" />
+  <target name="test" depends="run-unittests">
+    <phingcallifexists target="local.test"/>
+  </target>
 
   <!-- Run the code review quality tests -->
-  <target name="code-review" depends="run-unittests, code-browser, phpcpd, pdepend" />
+  <target name="code-review" depends="run-unittests, code-browser, phpcpd, pdepend">
+    <phingcallifexists target="local.code-review"/>
+  </target>
 
   <!-- Run all of the targets for setting up the code browser -->
-  <target name="code-browser" depends="phpmd, phpcs, phpcb" />
+  <target name="code-browser" depends="phpmd, phpcs, phpcb">
+    <phingcallifexists target="local.code-browser"/>
+  </target>
 
   <target name="pdepend">
     <mkdir dir="${project.review.logsdir}" />
@@ -221,6 +237,7 @@
     <mkdir dir="${project.review.logsdir}" />
     <exec command="phpdoc -d ${project.src.phpdir} -t ${project.review.docsdir}" logoutput="true"/>
     <echo message="You will find the PHPDoc for your project at: ${project.review.docsdir}/index.html"/>
+    <phingcallifexists target="local.phpdoc"/>
   </target>
 
   <!-- Check code for code smells -->
@@ -257,6 +274,7 @@
     <echo>You only need to run 'phing build-vendor' again if you change the</echo>
     <echo>dependencies listed in your package.xml file.</echo>
     <echo/>
+    <phingcallifexists target="local.buildvendor"/>
   </target>
 
   <!-- Setup the vendor folder -->
@@ -309,13 +327,13 @@
     </tar>
 
     <!-- write a message to say which file we built last -->
-    <echo file="${project.distdir.lastBuilt}" append="false">${project.tarfile}</echo>
+    <echo file="${project.distdir.lastBuilt}" append="false">project.lastBuiltTarfile=${project.tarfile}</echo>
     <echo>Your PEAR package is in ${project.tarfile}</echo>
+    <phingcallifexists target="local.pear-package"/>
   </target>
 
   <!-- Install the code -->
   <target name="install-vendor">
-    <echo>${project.lastBuiltTarfile}</echo>
     <if>
       <not>
         <contains string="${project.lastBuiltTarfile}" substring="${project.name}"/>
@@ -327,6 +345,7 @@
         <available file="${project.lastBuiltTarfile}"/>
         <then>
           <exec command="pear -c ${project.tmpdir}/pear-config install --alldeps -f ${project.lastBuiltTarfile}" logoutput="true" checkreturn="true"/>
+          <phingcallifexists target="local.install-vendor"/>
         </then>
       </elseif>
       <else>
@@ -349,6 +368,7 @@
         <available file="${project.lastBuiltTarfile}"/>
         <then>
           <exec command="pear install -f -a ${project.lastBuiltTarfile}" checkreturn="true" logoutput="true" />
+          <phingcallifexists target="local.install-system"/>
         </then>
       </elseif>
       <else>
@@ -379,6 +399,7 @@
 
           <!-- publish the new PEAR package -->
           <exec command="pirum add ${pear.local} ${project.lastBuiltTarfile}" checkreturn="true" logoutput="true" />
+          <phingcallifexists target="local.publish-local"/>
         </then>
       </elseif>
       <else>
@@ -400,6 +421,7 @@
   <!-- Upgrade the skeleton files here and now -->
   <target name="upgrade-skeleton">
     <exec command="phix ${component.type}:upgrade ." logoutput="true" checkreturn="true" />
+    <phingcallifexists target="local.upgrade-skeleton"/>
   </target>
 
   <!-- Clean up the mess -->
@@ -410,6 +432,7 @@
     <delete dir="${project.pkgdir}" />
     <delete dir="${project.distdir}" />
     <delete dir="${project.tmpdir}" />
+    <phingcallifexists target="local.clean"/>
   </target>
 </project>
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab: -->
