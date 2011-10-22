@@ -1,6 +1,32 @@
 <project default="local-help">
   <target name="local-help">
-    <echo message="This component has no local build targets." />
+    <echo message="This component has the following additional commands:" />
+    <echo message=""/>
+    <echo message="git-tag" />
+    <echo message="  Tag the current version in git" />
+    <echo message="" />
+    <echo message="git-force-tag" />
+    <echo message="  Force tag the current version in git (use with caution!)" />
+    <echo message="" />
+    <echo message="pp" />
+    <echo message="  Git push to upstream, publish to PEAR channel" />
+    <echo message="" />
+    <echo message="tpp - tag, publish, and push" />
+    <echo message="  Git tag, push to upstream, publish to PEAR channel" />
+    <echo message="" />
+  </target>
+
+  <target name="git-tag">
+    <exec command="git tag -a -m 'Release ${project.majorVersion}.${project.minorVersion}.${project.patchLevel}' ${project.majorVersion}.${project.minorVersion}.${project.patchLevel}" logoutput="true" checkreturn="true" />
+  </target>
+  <target name="git-force-tag">
+    <exec command="git tag -f -a -m 'Release ${project.majorVersion}.${project.minorVersion}.${project.patchLevel}' ${project.majorVersion}.${project.minorVersion}.${project.patchLevel}" logoutput="true" checkreturn="true" />
+  </target>
+  <target name="pp" depends="publish-local">
+    <exec command="git push --mirror" logoutput="true" checkreturn="true" />
+  </target>
+  <target name="tpp" depends="git-force-tag, publish-local">
+    <exec command="git push --mirror" logoutput="true" checkreturn="true" />
   </target>
 </project>
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab: -->
