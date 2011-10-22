@@ -4,7 +4,7 @@ ContractLib
 **ContractLib** is a simple-to-use PHP component for easily enforcing programming contracts throughout your PHP components.  These programming contracts can go a long way to helping you, and the users of your components, develop more robust code.
 
 ContractLib is loosely inspired by Microsoft Research's work on the
-[Code Contracts Library for .NET]{http://research.microsoft.com/en-us/projects/contracts/userdoc.pdf}
+[Code Contracts Library for .NET](http://research.microsoft.com/en-us/projects/contracts/userdoc.pdf)
 
 System-Wide Installation
 ------------------------
