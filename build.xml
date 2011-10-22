@@ -5,7 +5,6 @@
   <property file="build.properties" />
   <taskdef name="now" classname="Phix_Project.ComponentManager.Phing.NowTask" />
   <now name="date.now"/>
-  <echo message="Now is ${date.now}"/>
   <if>
     <and>
       <isset property="project.snapshot"/>
