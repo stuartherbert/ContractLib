@@ -325,8 +325,11 @@
       </fileset>
     </tar>
 
-    <!-- write a message to say which file we built last -->
+    <!-- remember the tarball we have just build -->
+    <property name="project.lastBuiltTarfile" value="${project.tarfile}" override="true"/>
     <echo file="${project.distdir.lastBuilt}" append="false">project.lastBuiltTarfile=${project.tarfile}</echo>
+
+    <!-- write a message to say which file we built last -->
     <echo>Your PEAR package is in ${project.tarfile}</echo>
     <phingcallifexists target="local.pear-package"/>
   </target>
