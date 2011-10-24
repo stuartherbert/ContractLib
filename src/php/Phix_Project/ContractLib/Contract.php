@@ -58,6 +58,8 @@ class Contract
         
         /**
          * Stateless library; cannot instantiate
+         * 
+         * @codeCoverageIgnore
          */
         protected function __construct()
         {
@@ -76,13 +78,14 @@ class Contract
          * 
          * @throw E5xx_ContractPreconditionException
          * @param boolean $expr 
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function Requires($expr)
+        static public function Requires($expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('Requires');
+                        throw new E5xx_ContractFailedException('Requires', $reason);
                 }
                 
                 return true;
@@ -101,13 +104,14 @@ class Contract
          * 
          * @param mixed $value 
          * @param boolean $expr
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function RequiresValue($value, $expr)
+        static public function RequiresValue($value, $expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('RequiresValue', true, $value);
+                        throw new E5xx_ContractFailedException('RequiresValue', $reason, true, $value);
                 }
                 
                 return true;
@@ -122,13 +126,14 @@ class Contract
          * Throws an E5xx_ContractPostconditionException if $expr is false.
          * 
          * @param boolean $expr 
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function Ensures($expr)
+        static public function Ensures($expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('Ensures');
+                        throw new E5xx_ContractFailedException('Ensures', $reason);
                 }
                 
                 return true;
@@ -146,13 +151,14 @@ class Contract
          * 
          * @param mixed $value 
          * @param boolean $expr
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function EnsuresValue($value, $expr)
+        static public function EnsuresValue($value, $expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('EnsuresValue', true, $value);
+                        throw new E5xx_ContractFailedException('EnsuresValue', $reason, true, $value);
                 }
                 
                 return true;
@@ -167,13 +173,14 @@ class Contract
          * Throws an E5xx_ContractConditionException if $expr is false.
          * 
          * @param boolean $expr 
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function Asserts($expr)
+        static public function Asserts($expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('Asserts');
+                        throw new E5xx_ContractFailedException('Asserts', $reason);
                 }
                 
                 return true;
@@ -191,13 +198,14 @@ class Contract
          * 
          * @param mixed $value
          * @param boolean $expr 
+         * @param string $reason error message to show on failure
          * @return boolean true on success
          */
-        static public function AssertsValue($value, $expr)
+        static public function AssertsValue($value, $expr, $reason = null)
         {
                 if (!$expr)
                 {
-                        throw new E5xx_ContractFailedException('AssertsValue', true, $value);
+                        throw new E5xx_ContractFailedException('AssertsValue', $reason, true, $value);
                 }
                 
                 return true;

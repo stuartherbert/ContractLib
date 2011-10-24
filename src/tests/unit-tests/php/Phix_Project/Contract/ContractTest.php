@@ -214,7 +214,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertTrue($caughtException !== false);
                 
                 // did we get the message we expect?
-                $expected = "Internal server error: Contract::RequiresValue() failed with value '5'";
+                $expected = "Internal server error: Contract::RequiresValue() failed; value tested was '5'";
                 $this->assertEquals($expected, $caughtException);
         }
 
@@ -234,7 +234,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertTrue($caughtException !== false);
                 
                 // did we get the message we expect?
-                $expected = "Internal server error: Contract::EnsuresValue() failed with value '5'";
+                $expected = "Internal server error: Contract::EnsuresValue() failed; value tested was '5'";
                 $this->assertEquals($expected, $caughtException);
         }
         
@@ -254,7 +254,118 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertTrue($caughtException !== false);
                 
                 // did we get the message we expect?
-                $expected = "Internal server error: Contract::AssertsValue() failed with value '5'";
+                $expected = "Internal server error: Contract::AssertsValue() failed; value tested was '5'";
+                $this->assertEquals($expected, $caughtException);
+        }
+        
+        public function testCanSeeTheReasonWhenThePreconditionFailed()
+        {
+                $caughtException = false;
+                try
+                {
+                        Contract::Requires(false, "my reason");
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::Requires() failed; reason for failure was: my reason";
+                $this->assertEquals($expected, $caughtException);
+                
+                $caughtException = false;
+                try
+                {
+                        Contract::RequiresValue(5, false, "my reason");
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::RequiresValue() failed; value tested was '5'; reason for failure was: my reason";
+                $this->assertEquals($expected, $caughtException);
+        }
+
+        public function testCanSeeTheReasonWhenThePostconditionFailed()
+        {
+                $caughtException = false;
+                try
+                {
+                        Contract::Ensures(false, 'my reason');
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::Ensures() failed; reason for failure was: my reason";
+                $this->assertEquals($expected, $caughtException);
+                
+                $caughtException = false;
+                try
+                {
+                        Contract::EnsuresValue(5, false, 'my reason');
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::EnsuresValue() failed; value tested was '5'; reason for failure was: my reason";
+                $this->assertEquals($expected, $caughtException);
+        }
+        
+        public function testCanSeeTheReasonTheMidConditionFailed()
+        {
+                $caughtException = false;
+                try
+                {
+                        Contract::Asserts(false, 'my reason');
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::Asserts() failed; reason for failure was: my reason";
+                $this->assertEquals($expected, $caughtException);
+                
+                $caughtException = false;
+                try
+                {
+                        Contract::AssertsValue(5, false, 'my reason');
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = $e->getMessage();
+                }
+                
+                // did we catch the exception?
+                $this->assertTrue($caughtException !== false);
+                
+                // did we get the message we expect?
+                $expected = "Internal server error: Contract::AssertsValue() failed; value tested was '5'; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
         }
         
