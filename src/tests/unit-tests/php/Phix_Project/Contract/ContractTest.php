@@ -65,7 +65,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 // prove that the precondition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Requires(true));
-                $this->assertTrue(Contract::RequiresValue(true, 0));
+                $this->assertTrue(Contract::RequiresValue(0, true));
                 
                 // prove that the precondition checks do throw an exception
                 // when they are passed the value of FALSE
@@ -85,7 +85,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::RequiresValue(false, 10);
+                        Contract::RequiresValue(10, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {
@@ -99,7 +99,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 // prove that the postcondition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Ensures(true));
-                $this->assertTrue(Contract::EnsuresValue(true, 0));
+                $this->assertTrue(Contract::EnsuresValue(0, true));
                 
                 // prove that the postcondition checks do throw an
                 // exception when they are passed the value of FALSE
@@ -119,7 +119,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::EnsuresValue(false, 10);
+                        Contract::EnsuresValue(10, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {
@@ -133,7 +133,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 // prove that the condition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Asserts(true));
-                $this->assertTrue(Contract::AssertsValue(true, 0));
+                $this->assertTrue(Contract::AssertsValue(0, true));
                 
                 // prove that the condition checks do throw an exception
                 // when they are passed the value of FALSE
@@ -153,7 +153,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::AssertsValue(false, 10);
+                        Contract::AssertsValue(10, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {
@@ -203,7 +203,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::RequiresValue(false, 5);
+                        Contract::RequiresValue(5, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {
@@ -223,7 +223,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::EnsuresValue(false, 5);
+                        Contract::EnsuresValue(5, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {
@@ -243,7 +243,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $caughtException = false;
                 try
                 {
-                        Contract::AssertsValue(false, 5);
+                        Contract::AssertsValue(5, false);
                 }
                 catch (E5xx_ContractFailedException $e)
                 {

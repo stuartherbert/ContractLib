@@ -99,11 +99,11 @@ class Contract
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
          * 
-         * @param boolean $expr
          * @param mixed $value 
+         * @param boolean $expr
          * @return boolean true on success
          */
-        static public function RequiresValue($expr, $value)
+        static public function RequiresValue($value, $expr)
         {
                 if (!$expr)
                 {
@@ -144,11 +144,11 @@ class Contract
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
          * 
-         * @param boolean $expr
          * @param mixed $value 
+         * @param boolean $expr
          * @return boolean true on success
          */
-        static public function EnsuresValue($expr, $value)
+        static public function EnsuresValue($value, $expr)
         {
                 if (!$expr)
                 {
@@ -189,11 +189,11 @@ class Contract
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
          * 
-         * @param boolean $expr 
          * @param mixed $value
+         * @param boolean $expr 
          * @return boolean true on success
          */
-        static public function AssertsValue($expr, $value)
+        static public function AssertsValue($value, $expr)
         {
                 if (!$expr)
                 {
