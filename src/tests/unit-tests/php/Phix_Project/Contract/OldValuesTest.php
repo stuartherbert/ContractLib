@@ -263,16 +263,35 @@ class OldValuesTest extends PHPUnit_Framework_TestCase
                 // remembers
                 $this->recallSomeValues();
                 $this->assertEquals($currentScopeCount + 1, count(Contract::_rememberedScopes()));
+                
+                // let's remember those values now
+                $this->rememberSomeValues(true);
+                $this->assertEquals($currentScopeCount, count(Contract::_rememberedScopes()));                
         }
         
-        protected function rememberSomeValues()
+        protected function rememberSomeValues($check = false)
         {
-                Contract::Preconditions(function()
+                if (!$check)
                 {
-                        // the scope for these values is unique
-                        Contract::RememberOldValue('arg1', __LINE__);
-                        Contract::RememberOldValue('arg2', __LINE__);
-                });
+                        Contract::Preconditions(function()
+                        {
+                                // the scope for these values is unique
+                                Contract::RememberOldValue('arg1', __LINE__);
+                                Contract::RememberOldValue('arg2', __LINE__);
+                        });
+                }
+                
+                if ($check)
+                {
+                        Contract::Postconditions(function($obj)
+                        {
+                                $obj->assertNotNull(Contract::OldValue('arg1'));
+                                $obj->assertNotNull(Contract::OldValue('arg2'));
+                                
+                                // clean up after ourselves
+                                Contract::ForgetOldValues();
+                        }, array($this));
+                }
         }
         
         protected function recallSomeValues()
