@@ -57,7 +57,23 @@ class Contract
         static protected $enforcing = false;                
         
         /**
-         * Stateless library; cannot instantiate
+         * A set of OldValues objects
+         * 
+         * You can get the right object for your code's current scope by
+         * calling Contract::OldValues()
+         * 
+         * Objects in this array that are no longer required are nuked by
+         * the Contract::Postconditions() wrapper
+         * 
+         * @var array(OldValues)
+         */
+        static protected $oldValues = array();
+        
+        /**
+         * Global library; cannot instantiate
+         * 
+         * You can't instantiate this library because it needs to preserve
+         * state even as the execution scope in your code changes :(
          * 
          * @codeCoverageIgnore
          */
@@ -225,6 +241,183 @@ class Contract
                 
                 return true;
         }
+        
+        // ================================================================
+        //
+        // Old values support
+        //
+        // ----------------------------------------------------------------
+        
+        /**
+         * Obtain a value, suitable for use as an array key, based on the
+         * current execution scope in an app
+         * 
+         * @return array(string, string)
+         *      The caller, plus the scope
+         */
+        static protected function determineScope()
+        {
+                // the scope comes from interpreting the current
+                // execution stack
+                //
+                // we are looking for the function or method that has
+                // called either Contract::Preconditions or 
+                // Contract::Postconditions
+                //
+                // this algorithm is annoyingly expensive, but it should
+                // ensure that there are no problems with actions in one
+                // scope ever affecting the old values remembered in any
+                // other scope
+                
+                $debug_backtrace = debug_backtrace();
+                
+                $caller   = null;
+                $maxIndex = count($debug_backtrace);
+                $i = 0;
+                
+                while ($caller == null && $i < $maxIndex)
+                {
+                        // var_dump(substr($debug_backtrace[$i]['function'], -10, 10));
+                        
+                        if (isset($debug_backtrace[$i]['class'])
+                            && $debug_backtrace[$i]['class'] == 'Phix_Project\ContractLib\Contract'
+                            && substr($debug_backtrace[$i]['function'], -10, 10) == 'conditions'
+                        )
+                        {
+                                $caller = $debug_backtrace[$i]['function'];
+                        }
+                        $i++;
+                }
+                
+                // did we find what we are looking for?
+                if ($caller == null)
+                {
+                        // no - throw an exception
+                        throw new \RuntimeException('You can only use ContractLib Old Values support inside Preconditions or Postconditions');
+                }
+
+                // at this point, $debug_backtrace[0] points at the caller
+                // to the precondition or postcondition
+                //
+                // we want to remember the file and function, but not the
+                // specific line number
+                //
+                // this makes sure that we return the same result when
+                // called in both the preconditions and postconditions
+                // in the same function, with the same callstack                
+                if (isset($debug_backtrace[$i]['line']))
+                {
+                        // this never seems to get called, but I assume
+                        // that one day the backtrace might get 'fixed'
+                        // @codeCoverageIgnoreStart
+                        unset($debug_backtrace[$i]['line']);
+                        // @codeCoverageIgnoreEnd
+                }
+                
+                // now, let's build up this scope
+                $scope = '';
+                for (;$i < $maxIndex; $i++)
+                {
+                        foreach (array('file', 'line', 'function') as $key)
+                        {
+                                if (isset($debug_backtrace[$i][$key]))
+                                {
+                                        $scope .= $debug_backtrace[$i][$key];
+                                }
+                        }
+                }
+
+                // var_dump($scope);
+                
+                return array($caller, $scope);
+        }
+        
+        /**
+         * Obtain the old value of an argument
+         * 
+         * @param string $argName
+         * @return mixed
+         */
+        static public function OldValue($argName)
+        {
+                // work out the current scope
+                list($caller, $scope) = self::determineScope();
+                
+                // do we have an existing OldValues object for this scope?
+                if (!isset(self::$oldValues[$scope]))
+                {
+                        return null;
+                }
+
+                // do we have a stashed value for this argument name?
+                if (self::$oldValues[$scope]->hasStashed($argName))
+                {
+                        // yes we do
+                        return self::$oldValues[$scope]->unpack($argName);
+                }
+                
+                // no we don't
+                return null;
+        }
+        
+        /**
+         * Remember an old value for future comparisons
+         * 
+         * @param string $argName
+         *      The name of the value to remember
+         * @param mixed $argValue
+         *      The value to remember
+         */
+        static public function RememberOldValue($argName, $argValue)
+        {
+                // work out the current scope
+                list($caller, $scope) = self::determineScope();
+                
+                // we must have been called from Preconditions
+                if ($caller !== 'Preconditions')
+                {
+                        throw new \RuntimeException('You can only remember old values inside Contract::Preconditions');
+                }
+                
+                // do we have an existing OldValues object for this scope?
+                if (!isset(self::$oldValues[$scope]))
+                {
+                        // no - create one!
+                        self::$oldValues[$scope] = new OldValues();
+                }
+                
+                // stash the value
+                self::$oldValues[$scope]->stash($argName, $argValue);
+        }
+        
+        /**
+         * Free up memory by forgetting the old values we may have
+         * remembered in the current scope
+         */
+        static public function ForgetOldValues()
+        {
+                // work out the current scope
+                list($caller, $scope) = self::determineScope();
+                
+                // release an object, if we have one
+                if (isset(self::$oldValues[$scope]))
+                {
+                        unset(self::$oldValues[$scope]);
+                }
+        }
+        
+        /**
+         * Get the internal list of scopes that are remembering old
+         * values
+         * 
+         * This method exists only to help with debugging
+         * 
+         * @return array
+         */
+        static public function _rememberedScopes()
+        {
+                return self::$oldValues;
+        }
 
         // ================================================================
         //
@@ -288,6 +481,7 @@ class Contract
                         call_user_func_array($callback, $params);
                 }
                 
+                // success!
                 return true;
         }
         

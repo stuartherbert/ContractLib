@@ -369,8 +369,11 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals($expected, $caughtException);
         }
         
-        public function testWrappedContractsAreNotCalledByDefault()
+        public function testWrappedContractsCanBeDisabled()
         {
+                // ensure wrapped contracts are switched off
+                Contract::EnforceOnlyDirectContracts();
+                
                 // some data to test
                 $x = 1;
                 $y = 2;
