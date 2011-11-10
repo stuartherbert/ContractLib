@@ -47,53 +47,53 @@ namespace Phix_Project\ContractLib;
 class Contract
 {
         /**
-         * Are we currently enforcing any contracts passed to 
+         * Are we currently enforcing any contracts passed to
          * self::Enforce()?
-         * 
+         *
          * By default, we do not!
-         * 
+         *
          * @var boolean
          */
-        static protected $enforcing = false;                
-        
+        static protected $enforcing = false;
+
         /**
          * A set of OldValues objects
-         * 
+         *
          * You can get the right object for your code's current scope by
          * calling Contract::OldValues()
-         * 
+         *
          * Objects in this array that are no longer required are nuked by
          * the Contract::Postconditions() wrapper
-         * 
+         *
          * @var array(OldValues)
          */
         static protected $oldValues = array();
-        
+
         /**
          * Global library; cannot instantiate
-         * 
+         *
          * You can't instantiate this library because it needs to preserve
          * state even as the execution scope in your code changes :(
-         * 
+         *
          * @codeCoverageIgnore
          */
         protected function __construct()
         {
                 // do nothing
         }
-        
+
         /**
          * Precondition: is the expression $expr true?
-         * 
+         *
          * Use this method at the start of your method to make sure you're
          * happy with the data that you have been passed, and with the
          * current state of your object
-         * 
+         *
          * Throws an E5xx_ContractPreconditionException if the parameter
          * passed in is false
-         * 
+         *
          * @throw E5xx_ContractPreconditionException
-         * @param boolean $expr 
+         * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
          */
@@ -103,22 +103,22 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('Requires', $reason);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Precondition: is the expression $expr true?
-         * 
+         *
          * Use this method at the start of your method to make sure you're
          * happy with the data that you have been passed, and with the
          * current state of your object
-         * 
+         *
          * Throws an E5xx_ContractPreconditionException if $expr is false,
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
-         * 
-         * @param mixed $value 
+         *
+         * @param mixed $value
          * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
@@ -129,19 +129,19 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('RequiresValue', $reason, true, $value);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Postcondition: is the expression $expr true?
-         * 
+         *
          * Use this method at the end of your method to make sure you're
          * happy with the results before your method returns to the caller
-         * 
+         *
          * Throws an E5xx_ContractPostconditionException if $expr is false.
-         * 
-         * @param boolean $expr 
+         *
+         * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
          */
@@ -151,21 +151,21 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('Ensures', $reason);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Postcondition: is the expression $expr true?
-         * 
+         *
          * Use this method at the end of your method to make sure you're
          * happy with the results before your method returns to the caller
-         * 
+         *
          * Throws an E5xx_ContractPostConditionException if $expr is false,
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
-         * 
-         * @param mixed $value 
+         *
+         * @param mixed $value
          * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
@@ -176,19 +176,19 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('EnsuresValue', $reason, true, $value);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Condition: is the expr $expr true?
-         * 
+         *
          * Use this method in the middle of your method, to check the
          * workings of your method before continuing.
-         * 
+         *
          * Throws an E5xx_ContractConditionException if $expr is false.
-         * 
-         * @param boolean $expr 
+         *
+         * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
          */
@@ -198,22 +198,22 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('Asserts', $reason);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Condition: is the expr $expr true?
-         * 
+         *
          * Use this method in the middle of your method, to check the
          * workings of your method before continuing.
-         * 
+         *
          * Throws an E5xx_ContractConditionException if $expr is false,
          * and adds $value to the exception's error message so that you
          * can see which value failed the test
-         * 
+         *
          * @param mixed $value
-         * @param boolean $expr 
+         * @param boolean $expr
          * @param string $reason error message to show on failure
          * @return boolean true on success
          */
@@ -223,35 +223,35 @@ class Contract
                 {
                         throw new E5xx_ContractFailedException('AssertsValue', $reason, true, $value);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Apply the same condition (or set of conditions) to the values
          * in an array
-         * 
+         *
          * @param array $values
-         * @param callback $callback 
+         * @param callback $callback
          * @param boolean true on success
          */
         static public function ForAll($values, $callback)
         {
                 array_walk($values, $callback);
-                
+
                 return true;
         }
-        
+
         // ================================================================
         //
         // Old values support
         //
         // ----------------------------------------------------------------
-        
+
         /**
          * Obtain a value, suitable for use as an array key, based on the
          * current execution scope in an app
-         * 
+         *
          * @return array(string, string)
          *      The caller, plus the scope
          */
@@ -261,24 +261,24 @@ class Contract
                 // execution stack
                 //
                 // we are looking for the function or method that has
-                // called either Contract::Preconditions or 
+                // called either Contract::Preconditions or
                 // Contract::Postconditions
                 //
                 // this algorithm is annoyingly expensive, but it should
                 // ensure that there are no problems with actions in one
                 // scope ever affecting the old values remembered in any
                 // other scope
-                
+
                 $debug_backtrace = debug_backtrace();
-                
+
                 $caller   = null;
                 $maxIndex = count($debug_backtrace);
                 $i = 0;
-                
+
                 while ($caller == null && $i < $maxIndex)
                 {
                         // var_dump(substr($debug_backtrace[$i]['function'], -10, 10));
-                        
+
                         if (isset($debug_backtrace[$i]['class'])
                             && $debug_backtrace[$i]['class'] == 'Phix_Project\ContractLib\Contract'
                             && substr($debug_backtrace[$i]['function'], -10, 10) == 'conditions'
@@ -288,7 +288,7 @@ class Contract
                         }
                         $i++;
                 }
-                
+
                 // did we find what we are looking for?
                 if ($caller == null)
                 {
@@ -304,7 +304,7 @@ class Contract
                 //
                 // this makes sure that we return the same result when
                 // called in both the preconditions and postconditions
-                // in the same function, with the same callstack                
+                // in the same function, with the same callstack
                 if (isset($debug_backtrace[$i]['line']))
                 {
                         // this never seems to get called, but I assume
@@ -313,7 +313,7 @@ class Contract
                         unset($debug_backtrace[$i]['line']);
                         // @codeCoverageIgnoreEnd
                 }
-                
+
                 // now, let's build up this scope
                 $scope = '';
                 for (;$i < $maxIndex; $i++)
@@ -328,13 +328,13 @@ class Contract
                 }
 
                 // var_dump($scope);
-                
+
                 return array($caller, $scope);
         }
-        
+
         /**
          * Obtain the old value of an argument
-         * 
+         *
          * @param string $argName
          * @return mixed
          */
@@ -342,7 +342,7 @@ class Contract
         {
                 // work out the current scope
                 list($caller, $scope) = self::determineScope();
-                
+
                 // do we have an existing OldValues object for this scope?
                 if (!isset(self::$oldValues[$scope]))
                 {
@@ -355,14 +355,14 @@ class Contract
                         // yes we do
                         return self::$oldValues[$scope]->unpack($argName);
                 }
-                
+
                 // no we don't
                 return null;
         }
-        
+
         /**
          * Remember an old value for future comparisons
-         * 
+         *
          * @param string $argName
          *      The name of the value to remember
          * @param mixed $argValue
@@ -372,24 +372,24 @@ class Contract
         {
                 // work out the current scope
                 list($caller, $scope) = self::determineScope();
-                
+
                 // we must have been called from Preconditions
                 if ($caller !== 'Preconditions')
                 {
                         throw new \RuntimeException('You can only remember old values inside Contract::Preconditions');
                 }
-                
+
                 // do we have an existing OldValues object for this scope?
                 if (!isset(self::$oldValues[$scope]))
                 {
                         // no - create one!
                         self::$oldValues[$scope] = new OldValues();
                 }
-                
+
                 // stash the value
                 self::$oldValues[$scope]->stash($argName, $argValue);
         }
-        
+
         /**
          * Free up memory by forgetting the old values we may have
          * remembered in the current scope
@@ -398,20 +398,20 @@ class Contract
         {
                 // work out the current scope
                 list($caller, $scope) = self::determineScope();
-                
+
                 // release an object, if we have one
                 if (isset(self::$oldValues[$scope]))
                 {
                         unset(self::$oldValues[$scope]);
                 }
         }
-        
+
         /**
          * Get the internal list of scopes that are remembering old
          * values
-         * 
+         *
          * This method exists only to help with debugging
-         * 
+         *
          * @return array
          */
         static public function _rememberedScopes()
@@ -421,10 +421,21 @@ class Contract
 
         // ================================================================
         //
+        // Unreachable code support
+        //
+        // ----------------------------------------------------------------
+
+        static public function Unreachable($file, $line)
+        {
+                throw new E5xx_ContractFailedException('Unreachable', "Unreachable code in file $file at line $line has somehow been reached. Go figure!");
+        }
+
+        // ================================================================
+        //
         // Wrapped contract support
         //
         // ----------------------------------------------------------------
-        
+
         /**
          * Tell us to enforce contracts passed to self::Enforce()
          */
@@ -441,16 +452,16 @@ class Contract
         {
                 self::$enforcing = false;
         }
-        
+
         /**
          * Check a set of preconditions *if* we are enforcing wrapped
          * contracts.
-         * 
+         *
          * This exists as a performance boost, allowing us to leave
          * contracts in the code even in production environments
-         * 
+         *
          * @param callback $callback
-         * @param array $params 
+         * @param array $params
          * @return boolean true on success
          */
         static public function Preconditions($callback, $params = array())
@@ -459,19 +470,19 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
-                
+
                 return true;
         }
-        
+
         /**
          * Check a set of postconditions *if* we are enforcing wrapped
          * contracts.
-         * 
+         *
          * This exists as a performance boost, allowing us to leave
          * contracts in the code even in production environments
-         * 
+         *
          * @param callback $callback
-         * @param array $params 
+         * @param array $params
          * @return boolean true on success
          */
         static public function Postconditions($callback, $params = array())
@@ -480,20 +491,20 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
-                
+
                 // success!
                 return true;
         }
-        
+
         /**
          * Check a set of conditions mid-method *if* we are enforcing
          * wrapped contracts.
-         * 
+         *
          * This exists as a performance boost, allowing us to leave
          * contracts in the code even in production environments
-         * 
+         *
          * @param callback $callback
-         * @param array $params 
+         * @param array $params
          * @return boolean true on success
          */
         static public function Conditionals($callback, $params = array())
@@ -502,7 +513,7 @@ class Contract
                 {
                         call_user_func_array($callback, $params);
                 }
-                
+
                 return true;
         }
 }
