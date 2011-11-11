@@ -59,14 +59,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $refMethod = $refClass->getMethod('__construct');
                 $this->assertFalse($refMethod->isPublic());
         }
-                
+
         public function testPreconditionsMustBeTrue()
         {
                 // prove that the precondition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Requires(true));
                 $this->assertTrue(Contract::RequiresValue(0, true));
-                
+
                 // prove that the precondition checks do throw an exception
                 // when they are passed the value of FALSE
                 $caughtException = false;
@@ -79,7 +79,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $caughtException = true;
                 }
                 $this->assertTrue($caughtException);
-                
+
                 // repeat the check with another of the precondition
                 // check methods
                 $caughtException = false;
@@ -93,14 +93,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 }
                 $this->assertTrue($caughtException);
         }
-        
+
         public function testPostconditionsMustBeTrue()
         {
                 // prove that the postcondition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Ensures(true));
                 $this->assertTrue(Contract::EnsuresValue(0, true));
-                
+
                 // prove that the postcondition checks do throw an
                 // exception when they are passed the value of FALSE
                 $caughtException = false;
@@ -113,7 +113,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $caughtException = true;
                 }
                 $this->assertTrue($caughtException);
-                
+
                 // repeat the test for another of the postcondition
                 // check methods
                 $caughtException = false;
@@ -127,14 +127,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 }
                 $this->assertTrue($caughtException);
         }
-        
+
         public function testMidConditionsMustBeTrue()
         {
                 // prove that the condition checks do not throw an
                 // exception when they are passed the value of TRUE
                 $this->assertTrue(Contract::Asserts(true));
                 $this->assertTrue(Contract::AssertsValue(0, true));
-                
+
                 // prove that the condition checks do throw an exception
                 // when they are passed the value of FALSE
                 $caughtException = false;
@@ -147,7 +147,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $caughtException = true;
                 }
                 $this->assertTrue($caughtException);
-                
+
                 // repeat the test with another of the condition check
                 // methods
                 $caughtException = false;
@@ -161,7 +161,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 }
                 $this->assertTrue($caughtException);
         }
-        
+
         public function testCanApplyConditionsToArrays()
         {
                 $testData1 = array (1,2,3,4,5);
@@ -172,10 +172,10 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 $this->assertTrue(true);
                 Contract::ForAll($testData2, function($value) { Contract::Requires($value > 5); });
                 $this->assertTrue(true);
-                
+
                 // these contracts are not satisfied
                 $caughtException = false;
-                try 
+                try
                 {
                         Contract::ForAll($testData1, function($value) { Contract::Requires($value > 5); });
                 }
@@ -187,7 +187,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
 
                 // these contracts are not satisfied
                 $caughtException = false;
-                try 
+                try
                 {
                         Contract::ForAll($testData2, function($value) { Contract::Requires($value < 6); });
                 }
@@ -197,7 +197,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 }
                 $this->assertTrue($caughtException);
         }
-        
+
         public function testCanSeeTheValueThatFailedThePrecondition()
         {
                 $caughtException = false;
@@ -209,10 +209,10 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::RequiresValue() failed; value tested was '5'";
                 $this->assertEquals($expected, $caughtException);
@@ -229,15 +229,15 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::EnsuresValue() failed; value tested was '5'";
                 $this->assertEquals($expected, $caughtException);
         }
-        
+
         public function testCanSeeTheValueThatFailedTheMidCondition()
         {
                 $caughtException = false;
@@ -249,15 +249,15 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::AssertsValue() failed; value tested was '5'";
                 $this->assertEquals($expected, $caughtException);
         }
-        
+
         public function testCanSeeTheReasonWhenThePreconditionFailed()
         {
                 $caughtException = false;
@@ -269,14 +269,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::Requires() failed; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
-                
+
                 $caughtException = false;
                 try
                 {
@@ -286,10 +286,10 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::RequiresValue() failed; value tested was '5'; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
@@ -306,14 +306,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::Ensures() failed; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
-                
+
                 $caughtException = false;
                 try
                 {
@@ -323,15 +323,15 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::EnsuresValue() failed; value tested was '5'; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
         }
-        
+
         public function testCanSeeTheReasonTheMidConditionFailed()
         {
                 $caughtException = false;
@@ -343,14 +343,14 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::Asserts() failed; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
-                
+
                 $caughtException = false;
                 try
                 {
@@ -360,22 +360,25 @@ class ContractTest extends PHPUnit_Framework_TestCase
                 {
                         $caughtException = $e->getMessage();
                 }
-                
+
                 // did we catch the exception?
                 $this->assertTrue($caughtException !== false);
-                
+
                 // did we get the message we expect?
                 $expected = "Internal server error: Contract::AssertsValue() failed; value tested was '5'; reason for failure was: my reason";
                 $this->assertEquals($expected, $caughtException);
         }
-        
-        public function testWrappedContractsAreNotCalledByDefault()
+
+        public function testWrappedContractsCanBeDisabled()
         {
+                // ensure wrapped contracts are switched off
+                Contract::EnforceOnlyDirectContracts();
+
                 // some data to test
                 $x = 1;
                 $y = 2;
                 $z = 3;
-                
+
                 // check wrapped preconditions
                 $executed = false;
                 Contract::Preconditions(function($x, $y, $z) use (&$executed) {
@@ -384,7 +387,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 }, array($x, $y, $z));
                 $this->assertFalse($executed);
-                
+
                 // check wrapped mid-conditions
                 $executed = false;
                 Contract::Conditionals(function() use (&$executed) {
@@ -393,7 +396,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 });
                 $this->assertFalse($executed);
-                
+
                 // check wrapped postconditions
                 $executed = false;
                 Contract::Postconditions(function($x, $y, $z) use (&$executed) {
@@ -401,19 +404,19 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         Contract::Ensures($z > $x);
                         $executed = true;
                 }, array($x, $y, $z));
-                $this->assertFalse($executed);                
+                $this->assertFalse($executed);
         }
-        
+
         public function testCanWrapContractsForPeformance()
         {
                 // enable wrapped contracts
                 Contract::EnforceWrappedContracts();
-                
+
                 // some data to test
                 $x = 1;
                 $y = 2;
                 $z = 3;
-                
+
                 // check wrapped preconditions
                 $executed = false;
                 Contract::Preconditions(function($x, $y, $z) use (&$executed) {
@@ -422,7 +425,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 }, array($x, $y, $z));
                 $this->assertTrue($executed);
-                
+
                 // check wrapped mid-conditions
                 $executed = false;
                 Contract::Conditionals(function() use (&$executed) {
@@ -431,7 +434,7 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 });
                 $this->assertTrue($executed);
-                
+
                 // check wrapped postconditions
                 $executed = false;
                 Contract::Postconditions(function($x, $y, $z) use (&$executed) {
@@ -440,13 +443,13 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 }, array($x, $y, $z));
                 $this->assertTrue($executed);
-        }        
-        
+        }
+
         public function testCanDisabledWrappedContracts()
         {
                 // enable wrapped contracts
                 Contract::EnforceWrappedContracts();
-                
+
                 // execute a wrapped contract
                 $executed = false;
                 Contract::Preconditions(function() use (&$executed)
@@ -454,10 +457,10 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 });
                 $this->assertTrue($executed);
-                
+
                 // now, disable wrapped contracts
                 Contract::EnforceOnlyDirectContracts();
-                
+
                 // repeat the test
                 $executed = false;
                 Contract::Preconditions(function() use (&$executed)
@@ -465,5 +468,29 @@ class ContractTest extends PHPUnit_Framework_TestCase
                         $executed = true;
                 });
                 $this->assertFalse($executed);
+        }
+
+        public function testCanTrackUnreachableCode()
+        {
+                $caughtException = false;
+                $expectedMessage =
+                $actualMessage = "Internal server error: Contract::Unreachable() failed; reason for failure was: "
+                        . 'Unreachable code in file ' . __FILE__
+                        . ' at line ' . (__LINE__ + 5)
+                        . ' has somehow been reached. Go figure!';
+
+                try
+                {
+                        Contract::Unreachable(__FILE__, __LINE__);
+                }
+                catch (E5xx_ContractFailedException $e)
+                {
+                        $caughtException = true;
+                        $actualMessage = $e->getMessage();
+                }
+
+                // what happened?
+                $this->assertTrue($caughtException);
+                $this->assertEquals($expectedMessage, $actualMessage);
         }
 }
