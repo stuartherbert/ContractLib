@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2011 Stuart Herbert.
+ * Copyright (c) 2011-present Stuart Herbert.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,51 +34,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Phix_Project
- * @subpackage  ContractLib
+ * @subpackage  ContractLib2
  * @author      Stuart Herbert <stuart@stuartherbert.com>
- * @copyright   2011 Stuart Herbert
+ * @copyright   2011-present Stuart Herbert
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link        http://phix-project.org
  * @version     @@PACKAGE_VERSION@@
  */
 
-namespace Phix_Project\ContractLib;
+namespace Phix_Project\ContractLib2;
+
+use Phix_Project\ExceptionsLib\E5xx_InternalServerErrorException;
 
 /**
- * Helper class for remember a set of named values
+ * This exception is thrown when an assert() statement fails
  */
-class OldValues
+class E5xx_ContractFailedException extends E5xx_InternalServerErrorException
 {
-        /**
-         * Add a value to the list
-         * 
-         * @param string $name
-         * @param mixed $value 
-         */
-        public function stash($name, $value)
+        public function __construct($contract, $reason, $hasValue = false, $value = false)
         {
-                $this->values[$name] = serialize($value);
-        }
-        
-        /**
-         * Do we have a named value in the list?
-         * 
-         * @param string $name
-         * @return boolean
-         */
-        public function hasStashed($name)
-        {
-                return isset($this->values[$name]);
-        }
-        
-        /**
-         * Retrieve a value from the list
-         * 
-         * @param string $name
-         * @return mixed
-         */
-        public function unpack($name)
-        {
-                return unserialize($this->values[$name]);
+                $message = 'Contract::' . $contract . '() failed';
+
+                if ($hasValue)
+                {
+                        $message .= "; value tested was '" . print_r($value, true) . "'";
+                }
+
+                if ($reason !== null)
+                {
+                        $message .= '; reason for failure was: ' . $reason;
+                }
+
+                parent::__construct($message);
         }
 }

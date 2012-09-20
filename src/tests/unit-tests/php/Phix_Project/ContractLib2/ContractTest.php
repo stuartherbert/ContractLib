@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2011 Stuart Herbert.
+ * Copyright (c) 2011-present Stuart Herbert.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,28 +34,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Phix_Project
- * @subpackage  ContractLib
+ * @subpackage  ContractLib2
  * @author      Stuart Herbert <stuart@stuartherbert.com>
- * @copyright   2011 Stuart Herbert
+ * @copyright   2011-present Stuart Herbert
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link        http://phix-project.org
  * @version     @@PACKAGE_VERSION@@
  */
 
 
-namespace Phix_Project\ContractLib;
+namespace Phix_Project\ContractLib2;
 
 use Exception;
 use ReflectionClass;
 use PHPUnit_Framework_TestCase;
 
-use Phix_Project\ContractLib\Contract;
-
 class ContractTest extends PHPUnit_Framework_TestCase
 {
         public function testCannotInstantiate()
         {
-                $refClass = new ReflectionClass('Phix_Project\ContractLib\Contract');
+                $refClass = new ReflectionClass('Phix_Project\ContractLib2\Contract');
                 $refMethod = $refClass->getMethod('__construct');
                 $this->assertFalse($refMethod->isPublic());
         }

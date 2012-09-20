@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2011 Stuart Herbert.
+ * Copyright (c) 2011-present Stuart Herbert.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Phix_Project
- * @subpackage  ContractLib
+ * @subpackage  ContractLib2
  * @author      Stuart Herbert <stuart@stuartherbert.com>
- * @copyright   2011 Stuart Herbert
+ * @copyright   2011-present Stuart Herbert
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link        http://phix-project.org
  * @version     @@PACKAGE_VERSION@@
  */
 
-namespace Phix_Project\ContractLib;
+namespace Phix_Project\ContractLib2;
 
 class Contract
 {
@@ -280,7 +280,7 @@ class Contract
                         // var_dump(substr($debug_backtrace[$i]['function'], -10, 10));
 
                         if (isset($debug_backtrace[$i]['class'])
-                            && $debug_backtrace[$i]['class'] == 'Phix_Project\ContractLib\Contract'
+                            && $debug_backtrace[$i]['class'] == 'Phix_Project\ContractLib2\Contract'
                             && substr($debug_backtrace[$i]['function'], -10, 10) == 'conditions'
                         )
                         {
@@ -293,7 +293,7 @@ class Contract
                 if ($caller == null)
                 {
                         // no - throw an exception
-                        throw new \RuntimeException('You can only use ContractLib Old Values support inside Preconditions or Postconditions');
+                        throw new \RuntimeException('You can only use ContractLib2 Old Values support inside Preconditions or Postconditions');
                 }
 
                 // at this point, $debug_backtrace[0] points at the caller

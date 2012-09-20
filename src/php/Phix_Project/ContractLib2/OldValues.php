@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2011 Stuart Herbert.
+ * Copyright (c) 2011-present Stuart Herbert.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,22 +34,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Phix_Project
- * @subpackage  ContractLib
+ * @subpackage  ContractLib2
  * @author      Stuart Herbert <stuart@stuartherbert.com>
- * @copyright   2011 Stuart Herbert
+ * @copyright   2011-present Stuart Herbert
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link        http://phix-project.org
  * @version     @@PACKAGE_VERSION@@
  */
 
-namespace Phix_Project\ContractLib;
+namespace Phix_Project\ContractLib2;
 
-interface ContractInvariant
+/**
+ * Helper class for remember a set of named values
+ */
+class OldValues
 {
         /**
-         * A test method that can be called at any time during the life
-         * of an object, which will run a series of assert()s to prove
-         * that the object is in a sane state
+         * Add a value to the list
+         *
+         * @param string $name
+         * @param mixed $value
          */
-        public function objectInvariant();
+        public function stash($name, $value)
+        {
+                $this->values[$name] = serialize($value);
+        }
+
+        /**
+         * Do we have a named value in the list?
+         *
+         * @param string $name
+         * @return boolean
+         */
+        public function hasStashed($name)
+        {
+                return isset($this->values[$name]);
+        }
+
+        /**
+         * Retrieve a value from the list
+         *
+         * @param string $name
+         * @return mixed
+         */
+        public function unpack($name)
+        {
+                return unserialize($this->values[$name]);
+        }
 }
