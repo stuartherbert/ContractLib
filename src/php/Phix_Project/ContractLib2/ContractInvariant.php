@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2011 Stuart Herbert.
+ * Copyright (c) 2011-present Stuart Herbert.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,37 +34,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Phix_Project
- * @subpackage  ContractLib
+ * @subpackage  ContractLib2
  * @author      Stuart Herbert <stuart@stuartherbert.com>
- * @copyright   2011 Stuart Herbert
+ * @copyright   2011-present Stuart Herbert
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  * @link        http://phix-project.org
  * @version     @@PACKAGE_VERSION@@
  */
 
-namespace Phix_Project\ContractLib;
+namespace Phix_Project\ContractLib2;
 
-use Phix_Project\ExceptionsLib\E5xx_InternalServerErrorException;
-
-/**
- * This exception is thrown when an assert() statement fails
- */
-class E5xx_ContractFailedException extends E5xx_InternalServerErrorException
+interface ContractInvariant
 {
-        public function __construct($contract, $reason, $hasValue = false, $value = false)
-        {
-                $message = 'Contract::' . $contract . '() failed';
-                
-                if ($hasValue)
-                {
-                        $message .= "; value tested was '" . print_r($value, true) . "'";
-                }
-                
-                if ($reason !== null)
-                {
-                        $message .= '; reason for failure was: ' . $reason;
-                }
-                
-                parent::__construct($message);
-        }
+        /**
+         * A test method that can be called at any time during the life
+         * of an object, which will run a series of assert()s to prove
+         * that the object is in a sane state
+         */
+        public function objectInvariant();
 }
