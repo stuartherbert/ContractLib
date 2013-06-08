@@ -44,7 +44,7 @@
 
 namespace Phix_Project\ContractLib2;
 
-use Phix_Project\ExceptionsLib\E5xx_InternalServerErrorException;
+use Phix_Project\ExceptionsLib1\E5xx_InternalServerErrorException;
 
 /**
  * This exception is thrown when an assert() statement fails

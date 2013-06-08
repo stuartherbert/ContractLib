@@ -1,4 +1,5 @@
 .build
+composer.phar
 dist
 .tmp
 nbproject
