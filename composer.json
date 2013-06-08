@@ -18,6 +18,9 @@
 	"require": {
 		"phix/exceptionslib1": "1.*"
 	},
+	"require-dev": {
+		"phix/autoloader4": "4.*"
+	},
 	"autoload": {
 		"psr-0": { "" : "src/php/" }
 	}
