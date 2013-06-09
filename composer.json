@@ -1,5 +1,5 @@
 {
-	"name": "phix/contractlib2",
+	"name": "phix/contractlib",
 	"description": "ContractLib is a lightweight PHP library designed to help you write more robust PHP components by helping your components enforce programming contracts throughout your code",
 	"homepage": "https://github.com/stuartherbert/ContractLib/",
 	"license": "BSD-3-Clause",
@@ -16,10 +16,10 @@
 		"source": "https://github.com/stuartherbert/ContractLib/"
 	},
 	"require": {
-		"phix/exceptionslib1": "1.*"
+		"phix/exceptionslib": "1.*"
 	},
 	"require-dev": {
-		"phix/autoloader4": "4.*"
+		"phix/autoloader": "4.*"
 	},
 	"autoload": {
 		"psr-0": { "" : "src/php/" }
